@@ -75,6 +75,10 @@ class Game {
         this.hint.innerText = 'Has trobat el número secret!!'
         this.points++
     }
+
+    setPoints(value : number) : void {
+
+    }
 }
 
 const game = new Game()
