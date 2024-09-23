@@ -7,6 +7,7 @@ var Game = /** @class */ (function () {
         this.lives = 20;
         this.points = 0;
         this.secretNumber = this.getRandomNumber();
+        this.mainContainer = document.querySelector("main");
         this.secretNumberContainer = document.getElementById("secret-num");
         this.hint = document.getElementById("hint");
         this.resetBtn = document.getElementById("btn-reset");
@@ -23,11 +24,18 @@ var Game = /** @class */ (function () {
         return Math.floor(Math.random() * (this.MAX_NUMBER - this.MIN_NUMBER + 1)) + this.MIN_NUMBER;
     };
     Game.prototype.reset = function () {
-        if (!this.hint || !this.secretNumberContainer)
+        if (!this.hint || !this.secretNumberContainer || !this.mainContainer)
             return;
         this.secretNumber = this.getRandomNumber();
         this.secretNumberContainer.innerText = "?";
         this.hint.innerText = "Comencem la partida ...";
+        this.mainContainer.style.backgroundColor = "var(--background)";
+        if (this.lives != 0)
+            return;
+        this.lives = 20;
+        this.points = 0;
+        this.updateLives();
+        this.updatePoints();
     };
     Game.prototype.checkPlayerNumber = function (event) {
         event.preventDefault();
@@ -35,7 +43,7 @@ var Game = /** @class */ (function () {
             return;
         var playerNumber = parseInt(this.playerInput.value);
         this.playerInput.value = "";
-        if (isNaN(playerNumber))
+        if (!this.isValidNumber(playerNumber))
             return;
         if (playerNumber === this.secretNumber)
             this.foundSecretNumber();
@@ -44,39 +52,57 @@ var Game = /** @class */ (function () {
         else if (playerNumber > this.secretNumber)
             this.biggerThanSecretNumber(playerNumber);
     };
+    Game.prototype.isValidNumber = function (playerNumber) {
+        if (isNaN(playerNumber)) {
+            alert("El número introduït és incorrecte.");
+            return false;
+        }
+        if (playerNumber < this.MIN_NUMBER) {
+            alert("El número és massa petit.");
+            return false;
+        }
+        if (playerNumber > this.MAX_NUMBER) {
+            alert("El número és massa gran.");
+            return false;
+        }
+        return true;
+    };
     Game.prototype.lowerThanSecretNumber = function (playerNumber) {
         if (!this.hint)
             return;
         this.hint.innerText = "El n\u00FAmero \u00E9s m\u00E9s gran que ".concat(playerNumber);
-        this.subtractLive();
+        this.decreaseLives();
     };
-    Game.prototype.subtractLive = function () {
+    Game.prototype.decreaseLives = function () {
         if (!this.livesContainer)
             return;
-        if (!this.hint)
-            return;
-        if (this.lives <= 0) {
-            this.hint.innerText = "Has perdut totes les vides!";
-            return;
-        }
         this.lives--;
+        if (this.lives <= 0)
+            this.endGame();
         this.updateLives();
+    };
+    Game.prototype.endGame = function () {
+        if (!this.hint || !this.mainContainer)
+            return;
+        this.hint.innerText = "Final de la partida";
+        this.mainContainer.style.backgroundColor = "var(--red)";
     };
     Game.prototype.biggerThanSecretNumber = function (playerNumber) {
         if (!this.hint)
             return;
         this.hint.innerText = "El n\u00FAmero \u00E9s m\u00E9s petit que ".concat(playerNumber);
-        this.subtractLive();
+        this.decreaseLives();
     };
     Game.prototype.foundSecretNumber = function () {
-        if (!this.secretNumberContainer || this.secretNumber == null || !this.hint)
+        if (!this.secretNumberContainer || this.secretNumber == null || !this.hint || !this.mainContainer)
             return;
         this.secretNumberContainer.innerText = this.secretNumber.toString();
         this.hint.innerText = 'Has trobat el número secret!!';
-        this.sumPoints();
+        this.increasePoints();
+        this.mainContainer.style.backgroundColor = "var(--green)";
         this.secretNumber = null;
     };
-    Game.prototype.sumPoints = function () {
+    Game.prototype.increasePoints = function () {
         this.points++;
         this.updatePoints();
     };
