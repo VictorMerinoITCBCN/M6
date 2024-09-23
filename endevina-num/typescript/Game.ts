@@ -4,7 +4,7 @@ class Game {
 
     lives: number;
     points: number;
-    secretNumber: number;
+    secretNumber: number | null;
 
     secretNumberContainer: HTMLElement | null;
     hint: HTMLElement | null;
@@ -53,7 +53,7 @@ class Game {
 
     checkPlayerNumber(event: Event): void {
         event.preventDefault();
-        if (!this.playerInput || !this.playerInput.value) return;
+        if (!this.playerInput || !this.playerInput.value || this.secretNumber == null) return;
 
         const playerNumber = parseInt(this.playerInput.value);
         this.playerInput.value = "";
@@ -89,11 +89,12 @@ class Game {
     }
 
     foundSecretNumber(): void {
-        if (!this.secretNumberContainer || !this.hint) return;
+        if (!this.secretNumberContainer || this.secretNumber == null|| !this.hint) return;
 
         this.secretNumberContainer.innerText = this.secretNumber.toString();
         this.hint.innerText = 'Has trobat el número secret!!';
         this.sumPoints();
+        this.secretNumber = null;
     }
 
     sumPoints(): void {

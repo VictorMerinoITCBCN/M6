@@ -31,7 +31,7 @@ var Game = /** @class */ (function () {
     };
     Game.prototype.checkPlayerNumber = function (event) {
         event.preventDefault();
-        if (!this.playerInput || !this.playerInput.value)
+        if (!this.playerInput || !this.playerInput.value || this.secretNumber == null)
             return;
         var playerNumber = parseInt(this.playerInput.value);
         this.playerInput.value = "";
@@ -69,11 +69,12 @@ var Game = /** @class */ (function () {
         this.subtractLive();
     };
     Game.prototype.foundSecretNumber = function () {
-        if (!this.secretNumberContainer || !this.hint)
+        if (!this.secretNumberContainer || this.secretNumber == null || !this.hint)
             return;
         this.secretNumberContainer.innerText = this.secretNumber.toString();
         this.hint.innerText = 'Has trobat el número secret!!';
         this.sumPoints();
+        this.secretNumber = null;
     };
     Game.prototype.sumPoints = function () {
         this.points++;
