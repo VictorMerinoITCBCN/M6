@@ -55,11 +55,12 @@ var Game = /** @class */ (function () {
             return;
         if (!this.hint)
             return;
+        if (this.lives <= 0) {
+            this.hint.innerText = "Has perdut totes les vides!";
+            return;
+        }
         this.lives--;
         this.updateLives();
-        if (this.lives === 0) {
-            this.hint.innerText = "Has perdut totes les vides!";
-        }
     };
     Game.prototype.biggerThanSecretNumber = function (playerNumber) {
         if (!this.hint)

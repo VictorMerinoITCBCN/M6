@@ -1,30 +1,15 @@
 class Game {
-    MIN_NUMBER = 1;
-    MAX_NUMBER = 20;
-
-    lives: number;
-    points: number;
-    secretNumber: number;
-
-    secretNumberContainer: HTMLElement | null;
-    hint: HTMLElement | null;
-
-    playerInput: HTMLInputElement | null;
-    playerForm: HTMLFormElement | null;
-
-    resetBtn: HTMLButtonElement | null;
-
-    livesContainer: HTMLElement | null;
-    pointsContainer: HTMLElement | null;
-
     constructor() {
+        this.MIN_NUMBER = 1;
+        this.MAX_NUMBER = 20;
+
         this.lives = 20;
         this.points = 0;
         this.secretNumber = this.getRandomNumber();
 
         this.secretNumberContainer = document.getElementById("secret-num");
         this.hint = document.getElementById("hint");
-        this.resetBtn = document.getElementById("btn-reset") as HTMLButtonElement | null;
+        this.resetBtn = document.getElementById("btn-reset");
 
         this.livesContainer = document.getElementById("lives");
         this.pointsContainer = document.getElementById("points");
@@ -32,18 +17,23 @@ class Game {
         this.updateLives();
         this.updatePoints();
 
-        this.playerInput = document.getElementById("in-player") as HTMLInputElement | null;
-        this.playerForm = document.getElementById("form-player") as HTMLFormElement | null;
+        this.playerInput = document.getElementById("in-player");
+        this.playerForm = document.getElementById("form-player");
 
-        this.resetBtn?.addEventListener("click", () => this.reset());
-        this.playerForm?.addEventListener("submit", (event) => this.checkPlayerNumber(event));
+        if (this.resetBtn) {
+            this.resetBtn.addEventListener("click", () => this.reset());
+        }
+
+        if (this.playerForm) {
+            this.playerForm.addEventListener("submit", (event) => this.checkPlayerNumber(event));
+        }
     }
 
-    getRandomNumber(): number {
+    getRandomNumber() {
         return Math.floor(Math.random() * (this.MAX_NUMBER - this.MIN_NUMBER + 1)) + this.MIN_NUMBER;
     }
 
-    reset(): void {
+    reset() {
         if (!this.hint || !this.secretNumberContainer) return;
 
         this.secretNumber = this.getRandomNumber();
@@ -51,7 +41,7 @@ class Game {
         this.hint.innerText = "Comencem la partida ...";
     }
 
-    checkPlayerNumber(event: Event): void {
+    checkPlayerNumber(event) {
         event.preventDefault();
         if (!this.playerInput || !this.playerInput.value) return;
 
@@ -60,34 +50,38 @@ class Game {
 
         if (isNaN(playerNumber)) return;
 
-        if (playerNumber === this.secretNumber) this.foundSecretNumber();
-        else if (playerNumber < this.secretNumber) this.lowerThanSecretNumber(playerNumber);
-        else if (playerNumber > this.secretNumber) this.biggerThanSecretNumber(playerNumber);
+        if (playerNumber === this.secretNumber) {
+            this.foundSecretNumber();
+        } else if (playerNumber < this.secretNumber) {
+            this.lowerThanSecretNumber(playerNumber);
+        } else if (playerNumber > this.secretNumber) {
+            this.biggerThanSecretNumber(playerNumber);
+        }
     }
 
-    lowerThanSecretNumber(playerNumber: number): void {
+    lowerThanSecretNumber(playerNumber) {
         if (!this.hint) return;
         this.hint.innerText = `El número és més gran que ${playerNumber}`;
         this.subtractLive();
     }
 
-    subtractLive(): void {
-        if (!this.livesContainer) return;
-        if (!this.hint) return
+    subtractLive() {
+        if (!this.livesContainer || !this.hint) return;
+        if (this.lives <= 0) {
+            this.hint.innerText = "Has perdut totes les vides!";
+            return
+        }
         this.lives--;
         this.updateLives();
-        if (this.lives === 0) {
-            this.hint.innerText = "Has perdut totes les vides!";
-        }
     }
 
-    biggerThanSecretNumber(playerNumber: number): void {
+    biggerThanSecretNumber(playerNumber) {
         if (!this.hint) return;
         this.hint.innerText = `El número és més petit que ${playerNumber}`;
         this.subtractLive();
     }
 
-    foundSecretNumber(): void {
+    foundSecretNumber() {
         if (!this.secretNumberContainer || !this.hint) return;
 
         this.secretNumberContainer.innerText = this.secretNumber.toString();
@@ -95,18 +89,18 @@ class Game {
         this.sumPoints();
     }
 
-    sumPoints(): void {
+    sumPoints() {
         this.points++;
         this.updatePoints();
     }
 
-    updateLives(): void {
+    updateLives() {
         if (this.livesContainer) {
             this.livesContainer.innerText = this.lives.toString();
         }
     }
 
-    updatePoints(): void {
+    updatePoints() {
         if (this.pointsContainer) {
             this.pointsContainer.innerText = this.points.toString();
         }
