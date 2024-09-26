@@ -6,11 +6,19 @@ var Game = /** @class */ (function () {
         this.MAX_NUMBER = 20;
         this.lives = 20;
         this.points = 0;
+        this.playerNums = [];
         this.secretNumber = this.getRandomNumber();
         this.mainContainer = document.querySelector("main");
         this.secretNumberContainer = document.getElementById("secret-num");
         this.hint = document.getElementById("hint");
+        this.playerNumsElement = document.getElementById("player-nums");
         this.resetBtn = document.getElementById("btn-reset");
+        this.header = document.getElementById("header");
+        var userMaxNum = prompt("Introdueix el valor maxim: ");
+        this.MAX_NUMBER = userMaxNum !== null ? parseInt(userMaxNum) : 20;
+        if (!this.header)
+            return;
+        this.header.innerText = "Busca un n\u00FAmero entre 1 i ".concat(this.MAX_NUMBER);
         this.livesContainer = document.getElementById("lives");
         this.pointsContainer = document.getElementById("points");
         this.updateLives();
@@ -30,6 +38,8 @@ var Game = /** @class */ (function () {
         this.secretNumberContainer.innerText = "?";
         this.hint.innerText = "Comencem la partida ...";
         this.mainContainer.style.backgroundColor = "var(--background)";
+        this.playerNums = [];
+        this.updatePlayerNums();
         if (this.lives != 0)
             return;
         this.lives = 20;
@@ -51,6 +61,11 @@ var Game = /** @class */ (function () {
             this.lowerThanSecretNumber(playerNumber);
         else if (playerNumber > this.secretNumber)
             this.biggerThanSecretNumber(playerNumber);
+        this.savePlayerNumber(playerNumber);
+    };
+    Game.prototype.savePlayerNumber = function (playerNumber) {
+        this.playerNums.push(playerNumber);
+        this.updatePlayerNums();
     };
     Game.prototype.isValidNumber = function (playerNumber) {
         if (isNaN(playerNumber)) {
@@ -115,6 +130,11 @@ var Game = /** @class */ (function () {
         if (this.pointsContainer) {
             this.pointsContainer.innerText = this.points.toString();
         }
+    };
+    Game.prototype.updatePlayerNums = function () {
+        if (!this.playerNumsElement)
+            return;
+        this.playerNumsElement.innerText = "Historial: " + this.playerNums.join(", ");
     };
     return Game;
 }());
